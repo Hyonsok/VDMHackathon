@@ -9,7 +9,7 @@ const petSchema = new Schema({
         ref: 'User',
     },
 
-    petName: {
+    pet_name: {
         type: String,
         required: true,
         unique: true,
@@ -29,7 +29,6 @@ const petSchema = new Schema({
         type: String,
         required: true,
     }
-
 });
 
 

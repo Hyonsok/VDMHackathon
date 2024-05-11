@@ -8,7 +8,13 @@ const userSchema = new Schema({
         unique: true,
     },
 
-    password: {
+    user_id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+
+    hashed_password: {
         type: String,
         required: true,
         unique: true,
@@ -20,7 +26,7 @@ const userSchema = new Schema({
         unique: true,
     },
 
-    lastName: {
+    last_name: {
         type: String,
         required: true,
         unique: true,
@@ -31,7 +37,7 @@ const userSchema = new Schema({
         required: true,
     },
 
-    Matches: {
+    matches: {
         type: Number,
         required: true,
     },
