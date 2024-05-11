@@ -1,12 +1,14 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import logo from "../images/logo.jpg";
 
 function Login() {
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img className="mx-auto h-10 w-auto" src="../images/logo.jpg" alt="takeMeLogo" />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <img className="mx-auto h-50 w-50" src={logo} width={100} height={100} alt="takeMeLogo" />
+          <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Sign in to your account
           </h2>
         </div>
@@ -15,7 +17,7 @@ function Login() {
           <form className="space-y-6" action="#" method="POST">
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                Email address
+                Email
               </label>
               <div className="mt-2">
                 <input
@@ -67,9 +69,13 @@ function Login() {
 
           <p className="mt-10 text-center text-sm text-gray-500">
             Not a member?{" "}
-            <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            <Link
+              to="/register"
+              href="#"
+              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            >
               Sign Up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
