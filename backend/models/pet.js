@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const { Types: { ObjectId } } = Schema;
-const petSchema = new Schema({
+const pet_schema = new Schema({
     adpator: {
         type: ObjectId, 
         required: true,
@@ -32,4 +32,4 @@ const petSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('Pet', petSchema);
+module.exports = mongoose.model('Pet', pet_schema);
