@@ -10,7 +10,7 @@ app.use(express.json())
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://vdm:AMzmEM3mXqbpvxDo@cluster0.xo6zkdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://dbUser1:rWK5HJcCxZcdMnXS@cluster0.xo6zkdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 app.get('/', (req, res) => {
   res.json("Hello");
