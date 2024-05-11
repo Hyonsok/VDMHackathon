@@ -1,6 +1,6 @@
-const PORT = 8000
+require('dotenv').config()
+PORT = 4000
 const express = require('express')
-const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
@@ -9,15 +9,29 @@ const app = express()
 app.use(express.json())
 
 
-// connect to db
-mongoose.connect('Your URI')
-  .then(() => {
-    console.log('connected to database')
-    // listen to port
-    app.listen(PORT, () => {
-      console.log('listening for requests on port', PORT)
-    })
-  })
-  .catch((err) => {
-    console.log(err)
-  }) 
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://vdm:AMzmEM3mXqbpvxDo@cluster0.xo6zkdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+app.get('/', (req, res) => {
+  res.json("Hello");
+})
+
+// Get all Users by userIds in the Database
+app.get('/users', async (req, res) => {
+  const client = new MongoClient(uri)
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const returnedUsers = await users.find().toArray()
+      res.send(returnedUsers)
+
+  } finally {
+      await client.close()
+  }
+})
+
+app.listen(PORT, ()=>console.log("Server running on Port " + PORT))
+
