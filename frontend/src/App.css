@@ -2,12 +2,12 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-.App {
+.Home {
   text-align: center;
   font-family: cursive;
 }
 
-.App-header {
+.Home-header {
   background: url("./images/puppy_home.jpg");
   background-repeat: no-repeat;
   min-height: 100vh;
