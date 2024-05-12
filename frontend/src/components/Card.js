@@ -1,69 +1,142 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import TinderCard from "react-tinder-card";
 
-const db = [
-  {
-    name: "puppy_01",
-    url: "./img/puppy_01.jpg",
-  },
-  {
-    name: "puppy_02",
-    url: "./img/puppy_02.jpg",
-  },
-  {
-    name: "puppy_03",
-    url: "./img/puppy_03.jpg",
-  },
-  {
-    name: "cat_01",
-    url: "./img/cat_01.jpg",
-  },
-  {
-    name: "cat_02",
-    url: "./img/cat_02.jpg",
-  },
-  {
-    name: "cat_03",
-    url: "./img/cat_03.jpg",
-  },
-  {
-    name: "rabbit_01",
-    url: "./img/rabbit_01.jpg",
-  },
-  {
-    name: "rabbit_02",
-    url: "./img/rabbit_02.jpg",
-  },
-  {
-    name: "rabbit_03",
-    url: "./img/rabbit_03.jpg",
-  },
-];
+// const db = [
+//   {
+//     user_id: "1",
+//     name: "puppy_01",
+//     url: "./img/puppy_01.jpg",
+//   },
+//   {
+//     user_id: "2",
+//     name: "puppy_02",
+//     url: "./img/puppy_02.jpg",
+//   },
+//   {
+//     user_id: "3",
+//     name: "puppy_03",
+//     url: "./img/puppy_03.jpg",
+//   },
+//   {
+//     user_id: "4",
+//     name: "cat_01",
+//     url: "./img/cat_01.jpg",
+//   },
+//   {
+//     user_id: "5",
+//     name: "cat_02",
+//     url: "./img/cat_02.jpg",
+//   },
+//   {
+//     user_id: "6",
+//     name: "cat_03",
+//     url: "./img/cat_03.jpg",
+//   },
+//   {
+//     user_id: "7",
+//     name: "rabbit_01",
+//     url: "./img/rabbit_01.jpg",
+//   },
+//   {
+//     user_id: "8",
+//     name: "rabbit_02",
+//     url: "./img/rabbit_02.jpg",
+//   },
+//   {
+//     user_id: "9",
+//     name: "rabbit_03",
+//     url: "./img/rabbit_03.jpg",
+//   },
+// ];
 
 function Card() {
-  const [currentIndex, setCurrentIndex] = useState(db.length - 1);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // Add state for current user ID
+  const [currentIndex, setCurrentIndex] = useState(0);
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
+  const childRefs = useMemo(() => Array(users.length).fill(0).map(() => React.createRef()), [users]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/users/");
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const childRefs = useMemo(
-    () =>
-      Array(db.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    []
-  );
+    fetchData();
+  }, []);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const currentUserData = JSON.parse(localStorage.getItem("currentUser"));
+        const response = await fetch(`http://localhost:4000/user/${currentUserData.userId}`, {
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        if(response.ok) {
+          const data = await response.json();
+          setCurrentUser(data);
+        } else {
+          console.log("Error fetching user data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  console.log(currentUser)
   const updateCurrentIndex = (val) => {
     setCurrentIndex(val);
     currentIndexRef.current = val;
   };
-
-  const canGoBack = currentIndex < db.length - 1;
+  const canGoBack = currentIndex < users.length - 1;
 
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (nameToDelete, index) => {
+  const swiped = async (user_id, nameToDelete, index, direction) => {
+    if (direction === "right") {
+      try {
+        if (currentUser.likes.some(like => like.user_id === user_id)) {
+          console.log("hello123")
+          // If user_id is in likes array, add user_id to matches array
+          await fetch(`http://localhost:4000/matches/${currentUser.user_id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id }),
+          });
+          console.log(`User ${user_id} (${nameToDelete}) matched!`);
+      } else {
+        // If user_id is not in likes array, add user_id to likes array
+        await fetch(`http://localhost:4000/likes/${currentUser.user_id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id }),
+        });
+        console.log(`User ${user_id} (${nameToDelete}) liked!`);
+      }
+      updateCurrentIndex(index - 1);
+      } catch(error) {
+        console.log("Error:", error);
+      }
+    } else if (direction === "left") {
+      console.log(`User ${user_id} (${nameToDelete}) swiped left!`);
+
+    }
     updateCurrentIndex(index - 1);
   };
 
@@ -77,7 +150,7 @@ function Card() {
   };
 
   const swipe = async (dir) => {
-    if (canSwipe && currentIndex < db.length) {
+    if (canSwipe && currentIndex < users.length) {
       await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
     }
   };
@@ -96,17 +169,17 @@ function Card() {
         <div>
           {/* <h1>React Tinder Card</h1> */}
           <div className="cardContainer">
-            {db.map((character, index) => (
+            {users.map((user, index) => (
               <TinderCard
                 ref={childRefs[index]}
                 className="swipe"
-                key={character.name}
-                onSwipe={() => swiped(character.name, index)}
-                onCardLeftScreen={() => outOfFrame(character.name, index)}
+                key={user.user_id}
+                onSwipe={(dir) => swiped(user.user_id, user.first_name, index, dir)}
+                onCardLeftScreen={() => outOfFrame(user.first_name, index)}
               >
                 <div
                   style={{
-                    backgroundImage: "url(" + character.url + ")",
+                    backgroundImage: "url(" + user.image + ")",
                     backgroundRepeat: "no-repeat",
                   }}
                   className="card"
