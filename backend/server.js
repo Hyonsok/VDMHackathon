@@ -43,7 +43,8 @@ app.post('/matches/:id', async (req, res) => {
   const client = new MongoClient(uri)
   const userId = req.params.id;
   const matchUserId = req.body.user_id;
-
+  console.log(userId)
+  console.log(matchUserId)
 
   try {
       await client.connect()
@@ -53,12 +54,22 @@ app.post('/matches/:id', async (req, res) => {
       const query = {user_id: userId}
       const user = await users.findOne(query)
       if(!user) {
-        return res.status(404).json({error: "Usre not found"})
+        return res.status(404).json({error: "User not found"})
       }
 
       await users.updateOne(
         { user_id: userId },
         { $addToSet: { matches: {'user_id': matchUserId }}}
+      );
+
+      const matchedQuery = {user_id: matchUserId}
+      const matchedUser = await users.findOne(matchedQuery)
+      if(!matchedUser) {
+        return res.status(404).json({error: "User not found"})
+      }
+      await users.updateOne(
+        { user_id: matchUserId },
+        { $addToSet: { matches: {'user_id': userId }}}
       );
       res.status(200).json({ message: 'Match added successfully '})
 
