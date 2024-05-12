@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../images/logo.jpg";
+import logo from "../img/logo.jpg";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  let navigate = useNavigate()
-
+  let navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -27,9 +26,9 @@ function Login() {
       });
 
       const data = await response.json();
-      console.log(data)
-      const success = response.status === 200
-      if (success) navigate('/signup')
+      console.log(data);
+      const success = response.status === 200;
+      if (success) navigate("/signup");
 
       if (response.ok) {
         // Handle successful login
@@ -56,10 +55,7 @@ function Login() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={onSubmit} action="#" method="POST">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email
               </label>
               <div className="mt-2">
