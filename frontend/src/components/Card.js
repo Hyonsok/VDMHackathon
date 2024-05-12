@@ -4,45 +4,44 @@ import TinderCard from "react-tinder-card";
 const db = [
   {
     name: "puppy_01",
-    url: "../images/puppy_01.jpg",
+    url: "./img/puppy_01.jpg",
   },
   {
     name: "puppy_02",
-    url: "../images/puppy_02.jpg",
+    url: "./img/puppy_02.jpg",
   },
   {
     name: "puppy_03",
-    url: "../images/puppy_03.jpg",
+    url: "./img/puppy_03.jpg",
   },
   {
     name: "cat_01",
-    url: "../images/cat_01.jpg",
+    url: "./img/cat_01.jpg",
   },
   {
     name: "cat_02",
-    url: "../images/cat_02.jpg",
+    url: "./img/cat_02.jpg",
   },
   {
     name: "cat_03",
-    url: "../images/cat_03.jpg",
+    url: "./img/cat_03.jpg",
   },
   {
     name: "rabbit_01",
-    url: "../images/rabbit_01.jpg",
+    url: "./img/rabbit_01.jpg",
   },
   {
     name: "rabbit_02",
-    url: "../images/rabbit_02.jpg",
+    url: "./img/rabbit_02.jpg",
   },
   {
     name: "rabbit_03",
-    url: "../images/rabbit_03.jpg",
+    url: "./img/rabbit_03.jpg",
   },
 ];
 
 function Card() {
   const [currentIndex, setCurrentIndex] = useState(db.length - 1);
-  const [lastDirection, setLastDirection] = useState();
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
 
@@ -64,8 +63,7 @@ function Card() {
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (direction, nameToDelete, index) => {
-    setLastDirection(direction);
+  const swiped = (nameToDelete, index) => {
     updateCurrentIndex(index - 1);
   };
 
@@ -98,19 +96,21 @@ function Card() {
         <div>
           {/* <h1>React Tinder Card</h1> */}
           <div className="cardContainer">
-            {console.log(db)}
             {db.map((character, index) => (
               <TinderCard
                 ref={childRefs[index]}
                 className="swipe"
                 key={character.name}
-                onSwipe={(dir) => swiped(dir, character.name, index)}
+                onSwipe={() => swiped(character.name, index)}
                 onCardLeftScreen={() => outOfFrame(character.name, index)}
               >
-                <div className="card">
-                  <img src={character.url} alt="petPicture" />
-                  <h3>{character.name}</h3>
-                </div>
+                <div
+                  style={{
+                    backgroundImage: "url(" + character.url + ")",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                  className="card"
+                ></div>
               </TinderCard>
             ))}
           </div>
@@ -131,15 +131,6 @@ function Card() {
               Swipe right!
             </button>
           </div>
-          {lastDirection ? (
-            <h2 key={lastDirection} className="infoText">
-              You swiped {lastDirection}
-            </h2>
-          ) : (
-            <h2 className="infoText">
-              Swipe a card or press a button to get Restore Card button visible!
-            </h2>
-          )}
         </div>
       </div>
     </div>
