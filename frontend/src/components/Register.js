@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../images/logo.jpg";
+import logo from "../img/logo.jpg";
 // import {useNavigate} from 'react-router-dom'
 
 
