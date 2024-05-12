@@ -13,6 +13,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [description, setDescription] = useState("");
+  const [likes, setLikes] = useState([]);
   const [matches, setMatches] = useState([]);
 
 
@@ -46,6 +47,7 @@ function Register() {
           email,
           role,
           description,
+          likes,
           matches,
         }),
       })
