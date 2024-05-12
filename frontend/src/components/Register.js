@@ -13,6 +13,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [description, setDescription] = useState("");
+  const [likes, setLikes] = useState([]);
   const [matches, setMatches] = useState([]);
 
   let navigate = useNavigate()
@@ -29,9 +30,9 @@ function Register() {
     console.log(role);
     console.log(description);
 
-    console.log('submitted')
+    console.log("submitted");
 
-    e.preventDefault()
+    e.preventDefault();
     try {
       const response = await fetch("http://localhost:4000/register", {
         method: "POST",
@@ -48,6 +49,7 @@ function Register() {
           email,
           role,
           description,
+          likes,
           matches,
         }),
       })
@@ -57,7 +59,7 @@ function Register() {
         navigate('/login')
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   };
 
@@ -73,7 +75,7 @@ function Register() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={onSubmit} action="#" method="POST">
-          <div>
+            <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email
               </label>
@@ -111,7 +113,6 @@ function Register() {
                 />
               </div>
             </div>
-
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-3">
                 <label
@@ -151,7 +152,6 @@ function Register() {
                 </div>
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="birthday"
@@ -169,13 +169,9 @@ function Register() {
                   onChange={(e) => setBirthday(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
-                <p className="text-sm leading-6 text-gray-400">
-                  Please select your date of birth.
-                </p>
+                <p className="text-sm leading-6 text-gray-400">Please select your date of birth.</p>
               </div>
             </div>
-
-
             <div className="mt-10 space-y-4">
               <legend className="text-sm font-semibold leading-6 text-gray-900">Role</legend>
               <div className="space-y-2">
@@ -214,7 +210,6 @@ function Register() {
                 </div>
               </div>
             </div>
-
             <div className="col-span-full">
               <label
                 htmlFor="description"
@@ -233,7 +228,6 @@ function Register() {
                 />
               </div>
             </div>
-
             <div>
               <button
                 type="submit"
