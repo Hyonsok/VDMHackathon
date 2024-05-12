@@ -29,7 +29,7 @@ function Login() {
       const data = await response.json();
       console.log(data)
       const success = response.status === 200
-      if (success) navigate('/signup')
+      if (response.ok) navigate('/register')
 
       if (response.ok) {
         // Handle successful login

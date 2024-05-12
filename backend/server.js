@@ -82,8 +82,6 @@ app.post('/register', async (req, res) => {
     await client.close()
   }
 })
-
-<<<<<<< backend-login
 // Log in to the Database
 app.post('/login', async (req, res) => {
   const client = new MongoClient(uri)
