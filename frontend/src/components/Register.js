@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../img/logo.jpg";
 // import {useNavigate} from 'react-router-dom'
 
-
-
 function Register() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -16,8 +14,7 @@ function Register() {
   const [likes, setLikes] = useState([]);
   const [matches, setMatches] = useState([]);
 
-  let navigate = useNavigate()
-
+  let navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -52,11 +49,11 @@ function Register() {
           likes,
           matches,
         }),
-      })
-      const data = await response.json()
-      const success = response.status === 200
-      if(response.ok) {
-        navigate('/login')
+      });
+      const data = await response.json();
+      const success = response.status === 200;
+      if (response.ok) {
+        navigate("/login");
       }
     } catch (err) {
       console.log(err);
