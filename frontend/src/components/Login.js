@@ -1,15 +1,46 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.jpg";
 
 function Login() {
-  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = (e) => {
+  let navigate = useNavigate()
+
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(userName);
+    console.log(email);
     console.log(password);
+    try {
+      const response = await fetch("http://localhost:4000/login", {
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data)
+      const success = response.status === 200
+      if (success) navigate('/signup')
+
+      if (response.ok) {
+        // Handle successful login
+        console.log("Login successful");
+      } else {
+        // Handle login failure
+        console.log("Login failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -26,19 +57,19 @@ function Login() {
           <form className="space-y-6" onSubmit={onSubmit} action="#" method="POST">
             <div>
               <label
-                htmlFor="user_id"
+                htmlFor="email"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                User name
+                Email
               </label>
               <div className="mt-2">
                 <input
-                  id="user_id"
-                  name="user_id"
+                  id="email"
+                  name="email"
                   type="text"
-                  autoComplete="user_id"
+                  autoComplete="email"
                   required
-                  onChange={(e) => setUserName(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
               </div>
@@ -59,7 +90,7 @@ function Login() {
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
+                  // required
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />

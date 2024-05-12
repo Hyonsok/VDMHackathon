@@ -3,9 +3,12 @@ PORT = 4000
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const cors = require('cors');
+
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 
@@ -28,6 +31,39 @@ app.get('/users', async (req, res) => {
       const returnedUsers = await users.find().toArray()
       res.send(returnedUsers)
 
+  } finally {
+      await client.close()
+  }
+})
+
+
+// Log in to the Database
+app.post('/login', async (req, res) => {
+  const client = new MongoClient(uri)
+  const {email, password} = req.body
+  console.log(email)
+  console.log(password)
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const user = await users.findOne({email})
+
+      const correctPassword = await bcrypt.compare(password, user.hashed_password)
+
+      if (user && correctPassword) {
+          const token = jwt.sign(user, email, {
+              expiresIn: 60 * 24
+          })
+          res.status(201).json({token, userId: user.user_id})
+      }
+
+      res.status(400).json('Invalid Credentials')
+
+  } catch (err) {
+      console.log(err)
   } finally {
       await client.close()
   }
