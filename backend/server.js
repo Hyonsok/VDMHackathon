@@ -7,6 +7,7 @@ const cors = require('cors')
 const app = express()
 const { v4: uuidv4 } = require('uuid');
 
+app.use(cors())
 app.use(express.json())
 app.use(cors())
 
@@ -54,7 +55,6 @@ app.post('/register', async (req, res) => {
     if (existingUser) {
       return res.status(409).send('User already exists. Please login')
     }
-
     const sanitizedEmail = email.toLowerCase()
 
     const data = {
@@ -80,6 +80,39 @@ app.post('/register', async (req, res) => {
     console.log(err)
   } finally {
     await client.close()
+  }
+})
+
+<<<<<<< backend-login
+// Log in to the Database
+app.post('/login', async (req, res) => {
+  const client = new MongoClient(uri)
+  const {email, password} = req.body
+  console.log(email)
+  console.log(password)
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const user = await users.findOne({email})
+
+      const correctPassword = await bcrypt.compare(password, user.hashed_password)
+
+      if (user && correctPassword) {
+          const token = jwt.sign(user, email, {
+              expiresIn: 60 * 24
+          })
+          res.status(201).json({token, userId: user.user_id})
+      }
+
+      res.status(400).json('Invalid Credentials')
+
+  } catch (err) {
+      console.log(err)
+  } finally {
+      await client.close()
   }
 })
 

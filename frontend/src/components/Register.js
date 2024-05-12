@@ -68,21 +68,18 @@ function Register() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={onSubmit} action="#" method="POST">
-            {/* <div>
-              <label
-                htmlFor="user_id"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                User name
+          <div>
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Email
               </label>
               <div className="mt-2">
                 <input
-                  id="user_id"
-                  name="user_id"
-                  type="text"
-                  autoComplete="user_id"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  onChange={(e) => setUserName(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
               </div>
@@ -161,34 +158,18 @@ function Register() {
                 <input
                   id="birthday"
                   name="birthday"
-                  type="text"
+                  type="date"
                   autoComplete="birthday"
                   required
                   onChange={(e) => setBirthday(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
                 <p className="text-sm leading-6 text-gray-400">
-                  Please enter your date of birth in the format YYYY/MM/DD.
+                  Please select your date of birth.
                 </p>
               </div>
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                Email
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
-                />
-              </div>
-            </div>
 
             <div className="mt-10 space-y-4">
               <legend className="text-sm font-semibold leading-6 text-gray-900">Role</legend>
