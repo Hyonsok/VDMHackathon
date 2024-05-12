@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../img/logo.jpg";
+// import {useNavigate} from 'react-router-dom'
 
 function Register() {
   const [password, setPassword] = useState("");
@@ -12,6 +13,8 @@ function Register() {
   const [description, setDescription] = useState("");
   const [likes, setLikes] = useState([]);
   const [matches, setMatches] = useState([]);
+
+  let navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +52,9 @@ function Register() {
       });
       const data = await response.json();
       const success = response.status === 200;
+      if (response.ok) {
+        navigate("/login");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -81,7 +87,8 @@ function Register() {
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
               </div>
-            </div>{" "}
+            </div>
+
             <div>
               <div className="flex items-center justify-between">
                 <label
