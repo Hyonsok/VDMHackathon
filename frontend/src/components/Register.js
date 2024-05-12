@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import logo from "../img/logo.jpg";
 
 function Register() {
-  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -11,10 +10,12 @@ function Register() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [description, setDescription] = useState("");
+  const [likes, setLikes] = useState([]);
+  const [matches, setMatches] = useState([]);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(userName);
+    // console.log(userName);
     console.log(password);
     console.log(firstName);
     console.log(lastName);
@@ -22,6 +23,35 @@ function Register() {
     console.log(email);
     console.log(role);
     console.log(description);
+
+    console.log("submitted");
+
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:4000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+        },
+        body: JSON.stringify({
+          password,
+          firstName,
+          lastName,
+          birthday,
+          email,
+          role,
+          description,
+          likes,
+          matches,
+        }),
+      });
+      const data = await response.json();
+      const success = response.status === 200;
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -37,25 +67,22 @@ function Register() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={onSubmit} action="#" method="POST">
             <div>
-              <label
-                htmlFor="user_id"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                User name
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                Email
               </label>
               <div className="mt-2">
                 <input
-                  id="user_id"
-                  name="user_id"
-                  type="text"
-                  autoComplete="user_id"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  onChange={(e) => setUserName(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
               </div>
-            </div>
-
+            </div>{" "}
+            */}
             <div>
               <div className="flex items-center justify-between">
                 <label
@@ -77,7 +104,6 @@ function Register() {
                 />
               </div>
             </div>
-
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-3">
                 <label
@@ -117,7 +143,6 @@ function Register() {
                 </div>
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="birthday"
@@ -129,35 +154,15 @@ function Register() {
                 <input
                   id="birthday"
                   name="birthday"
-                  type="text"
+                  type="date"
                   autoComplete="birthday"
                   required
                   onChange={(e) => setBirthday(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
                 />
-                <p className="text-sm leading-6 text-gray-400">
-                  Please enter your date of birth in the format YYYY/MM/DD.
-                </p>
+                <p className="text-sm leading-6 text-gray-400">Please select your date of birth.</p>
               </div>
             </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                Email
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 pl-3"
-                />
-              </div>
-            </div>
-
             <div className="mt-10 space-y-4">
               <legend className="text-sm font-semibold leading-6 text-gray-900">Role</legend>
               <div className="space-y-2">
@@ -196,7 +201,6 @@ function Register() {
                 </div>
               </div>
             </div>
-
             <div className="col-span-full">
               <label
                 htmlFor="description"
@@ -215,7 +219,6 @@ function Register() {
                 />
               </div>
             </div>
-
             <div>
               <button
                 type="submit"
