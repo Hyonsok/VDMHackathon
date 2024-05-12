@@ -5,6 +5,7 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Card from "./components/Card";
+import Chat from "./components/Chat";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/card" element={<Card />} />
+      <Route path="/chat" element={<Chat />} />
     </Routes>
   );
 }
