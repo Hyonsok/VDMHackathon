@@ -40,7 +40,7 @@ app.get('/users', async (req, res) => {
 app.post('/register', async (req, res) => {
   const client = new MongoClient(uri)
   console.log("hello")
-  const { email, password, firstName, lastName, birthday, role, description, matches} = req.body
+  const { email, password, firstName, lastName, birthday, role, description, likes, matches} = req.body
   console.log(req.body)
   const generatedUserId = uuidv4()
   const hashedPassword = await bcrypt.hash(password, 10)
@@ -66,6 +66,7 @@ app.post('/register', async (req, res) => {
       role: role,
       description: description,
       email: sanitizedEmail,
+      likes: likes,
       matches: matches,
     }
 
@@ -83,7 +84,6 @@ app.post('/register', async (req, res) => {
   }
 })
 
-<<<<<<< backend-login
 // Log in to the Database
 app.post('/login', async (req, res) => {
   const client = new MongoClient(uri)
