@@ -6,13 +6,27 @@ const bcrypt = require('bcrypt')
 const cors = require('cors')
 const app = express()
 const { v4: uuidv4 } = require('uuid');
+const multer = require('multer')
+
 
 app.use(cors())
 app.use(express.json())
 app.use(cors())
 
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://vdm:AMzmEM3mXqbpvxDo@cluster0.xo6zkdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '../frontend/public/img/');
+
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+})
+
+const upload = multer({ storage: storage })
 
 
 app.get('/', (req, res) => {
@@ -37,10 +51,10 @@ app.get('/users', async (req, res) => {
 })
 
 // Register User
-app.post('/register', async (req, res) => {
+app.post('/register', upload.single('file'), async (req, res) => {
   const client = new MongoClient(uri)
   console.log("hello")
-  const { email, password, firstName, lastName, birthday, role, description, likes, matches} = req.body
+  const { email, password, firstName, lastName, birthday, role, description, likes, matches, image, file } = req.body
   console.log(req.body)
   const generatedUserId = uuidv4()
   const hashedPassword = await bcrypt.hash(password, 10)
@@ -68,6 +82,8 @@ app.post('/register', async (req, res) => {
       email: sanitizedEmail,
       likes: likes,
       matches: matches,
+      image: image,
+      file: file,
     }
 
     const insertedUser = await users.insertOne(data)
@@ -83,35 +99,37 @@ app.post('/register', async (req, res) => {
     await client.close()
   }
 })
+
+
 // Log in to the Database
 app.post('/login', async (req, res) => {
   const client = new MongoClient(uri)
-  const {email, password} = req.body
+  const { email, password } = req.body
   console.log(email)
   console.log(password)
 
   try {
-      await client.connect()
-      const database = client.db('vdm')
-      const users = database.collection('users')
+    await client.connect()
+    const database = client.db('vdm')
+    const users = database.collection('users')
 
-      const user = await users.findOne({email})
+    const user = await users.findOne({ email })
 
-      const correctPassword = await bcrypt.compare(password, user.hashed_password)
+    const correctPassword = await bcrypt.compare(password, user.hashed_password)
 
-      if (user && correctPassword) {
-          const token = jwt.sign(user, email, {
-              expiresIn: 60 * 24
-          })
-          res.status(201).json({token, userId: user.user_id})
-      }
+    if (user && correctPassword) {
+      const token = jwt.sign(user, email, {
+        expiresIn: 60 * 24
+      })
+      res.status(201).json({ token, userId: user.user_id })
+    }
 
-      res.status(400).json('Invalid Credentials')
+    res.status(400).json('Invalid Credentials')
 
   } catch (err) {
-      console.log(err)
+    console.log(err)
   } finally {
-      await client.close()
+    await client.close()
   }
 })
 
