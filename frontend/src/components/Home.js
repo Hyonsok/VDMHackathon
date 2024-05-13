@@ -7,7 +7,7 @@ function Home() {
       <header className="Home-header">
         <p className="home-title text-7xl pt-5 pb-4 mt-5">Take Me</p>
         <p className="text-sm px-8 pb-7 leading-tight">
-          Take me is an application through which users can view and adopt rescued pets online
+          Take me is an application through which users can view and <br/>adopt rescued pets online
           directly.
         </p>
         <Link
