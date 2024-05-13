@@ -14,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, Timestamp } = require('mongodb');
 const uri = "mongodb+srv://vdm:AMzmEM3mXqbpvxDo@cluster0.xo6zkdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -221,7 +221,43 @@ app.post('/login', async (req, res) => {
   } finally {
     await client.close()
   }
-})
+});
+
+// Create a new message
+app.post('/messages', async (req, res) => {
+  const client = new MongoClient(uri)
+  const { from_userId, to_userId, message } = req.body;
+  const timestamp = new Date(); // Current timestamp
+
+  try {
+    await client.connect()
+    const database = client.db('vdm')
+    const messages = database.collection('messages')
+    const data = {
+      timestamp: timestamp,
+      from_userId: from_userId,
+      to_userId: to_userId,
+      message: message
+    }
+    const insertedMessage = await messages.insertOne(data)
+    res.send(insertedMessage);
+  } catch (error) {
+    console.error('Error creating message:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get messages for a specific user
+app.get('/messages/:id', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const messages = await Message.find({ $or: [{ from_userId: userId }, { to_userId: userId }] });
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.listen(PORT, () => console.log("Server running on Port " + PORT))
 

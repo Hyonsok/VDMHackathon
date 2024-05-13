@@ -10,6 +10,7 @@
 .Home-header {
   background: url("../public/img/puppy_home.jpg");
   background-repeat: no-repeat;
+  background-position: center; /* Positions the background image at the center */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -17,7 +18,6 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
 /* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -74,6 +74,30 @@
 /* Adjust the z-index to stack the cards */
 .swipe:nth-child(n+5) {
   z-index: -1; /* Start stacking from the second card with a lower z-index */
+}
+
+/* CSS */
+.chatImage {
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Adjust the height as needed */
+  border-radius: 50%; /* Make the image round */
+}
+
+/* CSS */
+.chatItem {
+  display: flex; /* Use flexbox */
+  align-items: center; /* Align items vertically */
+}
+
+.chatImage {
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Adjust the height as needed */
+  border-radius: 50%; /* Make the image round */
+  margin-right: 10px; /* Add some margin between image and text */
+}
+
+.chatInfo span {
+  margin-right: 10px; /* Add some space between name and latestMsg */
 }
 
 .cardContainer {
@@ -201,6 +225,7 @@
 }
 
 .chatInfo {
+  width: 100%;
   height: 50px;
   background-color: #5d5b8d;
   display: flex;
