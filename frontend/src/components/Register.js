@@ -4,7 +4,6 @@ import logo from "../img/logo.jpg";
 import axios from "axios"
 // import {useNavigate} from 'react-router-dom'
 
-
 function Register() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -18,8 +17,7 @@ function Register() {
   const [image, setImage] = useState("");
   const [file, setFile] = useState();
 
-  let navigate = useNavigate()
-
+  let navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();

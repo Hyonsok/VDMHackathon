@@ -26,13 +26,12 @@ function Login() {
       });
 
       const data = await response.json();
-      console.log(data)
-      const success = response.status === 200
-      if (response.ok) navigate('/card')
-
       if (response.ok) {
         // Handle successful login
         console.log("Login successful");
+        localStorage.setItem("currentUser", JSON.stringify(data));
+        navigate('/card')
+
       } else {
         // Handle login failure
         console.log("Login failed");

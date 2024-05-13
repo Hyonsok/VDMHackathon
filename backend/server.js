@@ -33,6 +33,100 @@ app.get('/', (req, res) => {
   res.json("Hello");
 })
 
+// Get individual user
+app.get('/user/:id', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userId = req.params.id;
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const query = {user_id: userId}
+      const user = await users.findOne(query)
+      res.send(user)
+
+  } finally {
+      await client.close()
+  }
+})
+
+// Upate matches
+app.post('/matches/:id', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userId = req.params.id;
+  const matchUserId = req.body.user_id;
+  console.log(userId)
+  console.log(matchUserId)
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const query = {user_id: userId}
+      const user = await users.findOne(query)
+      if(!user) {
+        return res.status(404).json({error: "User not found"})
+      }
+
+      await users.updateOne(
+        { user_id: userId },
+        { $addToSet: { matches: {'user_id': matchUserId }}}
+      );
+
+      const matchedQuery = {user_id: matchUserId}
+      const matchedUser = await users.findOne(matchedQuery)
+      if(!matchedUser) {
+        return res.status(404).json({error: "User not found"})
+      }
+      await users.updateOne(
+        { user_id: matchUserId },
+        { $addToSet: { matches: {'user_id': userId }}}
+      );
+      res.status(200).json({ message: 'Match added successfully '})
+
+  } catch(error) {
+    console.log('Error updating matches:', error);
+    res.status(500).json( { error: 'Internal server error' } );
+  } finally {
+      await client.close()
+  }
+})
+
+
+// Upate likes
+app.post('/likes/:id', async (req, res) => {
+  const client = new MongoClient(uri)
+  const userId = req.params.id;
+  const likeUserId = req.body.user_id;
+
+  try {
+      await client.connect()
+      const database = client.db('vdm')
+      const users = database.collection('users')
+
+      const query = {user_id: userId}
+      const user = await users.findOne(query)
+      if(!user) {
+        return res.status(404).json({error: "Usre not found"})
+      }
+
+      await users.updateOne(
+        { user_id: userId },
+        { $addToSet: { likes: {'user_id': likeUserId }}}
+      );
+      res.status(200).json({ message: 'Match added successfully '})
+
+  } catch(error) {
+    console.log('Error updating matches:', error);
+    res.status(500).json( { error: 'Internal server error' } );
+  } finally {
+      await client.close();
+  }
+})
+
 // Get all Users by userIds in the Database
 app.get('/users', async (req, res) => {
   const client = new MongoClient(uri)
@@ -53,9 +147,7 @@ app.get('/users', async (req, res) => {
 // Register User
 app.post('/register', upload.single('file'), async (req, res) => {
   const client = new MongoClient(uri)
-  console.log("hello")
   const { email, password, firstName, lastName, birthday, role, description, likes, matches, image, file } = req.body
-  console.log(req.body)
   const generatedUserId = uuidv4()
   const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -105,8 +197,6 @@ app.post('/register', upload.single('file'), async (req, res) => {
 app.post('/login', async (req, res) => {
   const client = new MongoClient(uri)
   const { email, password } = req.body
-  console.log(email)
-  console.log(password)
 
   try {
     await client.connect()

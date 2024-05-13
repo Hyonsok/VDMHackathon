@@ -1,69 +1,98 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import TinderCard from "react-tinder-card";
 
-const db = [
-  {
-    name: "puppy_01",
-    url: "./img/puppy_01.jpg",
-  },
-  {
-    name: "puppy_02",
-    url: "./img/puppy_02.jpg",
-  },
-  {
-    name: "puppy_03",
-    url: "./img/puppy_03.jpg",
-  },
-  {
-    name: "cat_01",
-    url: "./img/cat_01.jpg",
-  },
-  {
-    name: "cat_02",
-    url: "./img/cat_02.jpg",
-  },
-  {
-    name: "cat_03",
-    url: "./img/cat_03.jpg",
-  },
-  {
-    name: "rabbit_01",
-    url: "./img/rabbit_01.jpg",
-  },
-  {
-    name: "rabbit_02",
-    url: "./img/rabbit_02.jpg",
-  },
-  {
-    name: "rabbit_03",
-    url: "./img/rabbit_03.jpg",
-  },
-];
-
 function Card() {
-  const [currentIndex, setCurrentIndex] = useState(db.length - 1);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // Add state for current user ID
+  const [currentIndex, setCurrentIndex] = useState(0);
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex);
+  const childRefs = useMemo(() => Array(users.length).fill(0).map(() => React.createRef()), [users]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/users/");
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const childRefs = useMemo(
-    () =>
-      Array(db.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    []
-  );
+    fetchData();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const currentUserData = JSON.parse(localStorage.getItem("currentUser"));
+        const response = await fetch(`http://localhost:4000/user/${currentUserData.userId}`, {
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        if(response.ok) {
+          const data = await response.json();
+          setCurrentUser(data);
+        } else {
+          console.log("Error fetching user data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const updateCurrentIndex = (val) => {
     setCurrentIndex(val);
     currentIndexRef.current = val;
   };
-
-  const canGoBack = currentIndex < db.length - 1;
+  const canGoBack = currentIndex < users.length - 1;
 
   const canSwipe = currentIndex >= 0;
 
+  
+  const swipe = async (dir) => {
+    if (canSwipe && currentIndex < users.length) {
+      await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
+    }
+  };
   // set last direction and decrease current index
-  const swiped = (nameToDelete, index) => {
+  const swiped = async (user_id, likes, index, direction) => {
+    await swipe(direction); // Swipe the card!
+    if (direction === "right") {
+      try {
+        if (likes.some(like => like.user_id === currentUser.user_id)) {
+          // If user_id is in likes array, add user_id to matches array
+          await fetch(`http://localhost:4000/matches/${currentUser.user_id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id }),
+          });
+      } else {
+        // If user_id is not in likes array, add user_id to likes array
+        await fetch(`http://localhost:4000/likes/${currentUser.user_id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_id }),
+        });
+      }
+      updateCurrentIndex(index - 1);
+      } catch(error) {
+        console.log("Error:", error);
+      }
+    } else if (direction === "left") {
+      console.log(`User ${user_id} swiped left!`);
+
+    }
     updateCurrentIndex(index - 1);
   };
 
@@ -76,11 +105,6 @@ function Card() {
     // during latest swipes. Only the last outOfFrame event should be considered valid
   };
 
-  const swipe = async (dir) => {
-    if (canSwipe && currentIndex < db.length) {
-      await childRefs[currentIndex].current.swipe(dir); // Swipe the card!
-    }
-  };
 
   // increase current index and show card
   const goBack = async () => {
@@ -90,34 +114,65 @@ function Card() {
     await childRefs[newIndex].current.restoreCard();
   };
 
+
   return (
     <div className="cardRoot">
       <div className="cardWrapper">
         <div>
           {/* <h1>React Tinder Card</h1> */}
           <div className="cardContainer">
-            {db.map((character, index) => (
-              <TinderCard
-                ref={childRefs[index]}
-                className="swipe"
-                key={character.name}
-                onSwipe={() => swiped(character.name, index)}
-                onCardLeftScreen={() => outOfFrame(character.name, index)}
-              >
-                <div
-                  style={{
-                    backgroundImage: "url(" + character.url + ")",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                  className="card"
-                ></div>
-              </TinderCard>
-            ))}
+            {users
+            .filter(user => user.user_id !== currentUser?.user_id)
+            .map((user, index) => {
+              const isAdopter = currentUser && currentUser.role === 'adopter';
+              if(isAdopter && user.role === 'adoptee') {
+                return(
+                  <TinderCard
+                    ref={childRefs[index]}
+                    className="swipe"
+                    key={user.user_id}
+                    onSwipe={(dir) => swiped(user.user_id, user.likes, index, dir)}
+                    onCardLeftScreen={() => outOfFrame(user.first_name, index)}
+                  >
+                    <div
+                      style={{
+                        backgroundImage: "url(" + user.image + ")",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                      className="card"
+                    ></div>
+                  </TinderCard>
+                );
+              }
+              if(!isAdopter && user.role === 'adopter') {
+                return(
+                  <TinderCard
+                    ref={childRefs[index]}
+                    className="swipe"
+                    key={user.user_id}
+                    onSwipe={(dir) => swiped(user.user_id, user.likes, index, dir)}
+                    onCardLeftScreen={() => outOfFrame(user.first_name, index)}
+                  >
+                    <div
+                      style={{
+                        backgroundImage: "url(" + user.image + ")",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                      className="card"
+                    ></div>
+                  </TinderCard>
+                );
+              }
+              return null;
+          })}
           </div>
           <div className="buttons">
             <button
               style={{ backgroundColor: !canSwipe && "#c3c4d3" }}
-              onClick={() => swipe("left")}
+              onClick={() => {
+                console.log(users[currentIndex].user_id);
+                swiped(users[currentIndex].user_id, users[currentIndex].likes, currentIndex, "left")}
+              }
             >
               Swipe left!
             </button>
@@ -126,7 +181,11 @@ function Card() {
             </button>
             <button
               style={{ backgroundColor: !canSwipe && "#c3c4d3" }}
-              onClick={() => swipe("right")}
+              onClick={() => {
+                console.log(users[currentIndex].likes);
+
+                swiped(users[currentIndex].user_id, users[currentIndex].likes, currentIndex, "right")}
+              }
             >
               Swipe right!
             </button>
