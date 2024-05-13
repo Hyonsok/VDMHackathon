@@ -1,16 +1,23 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../img/logo.jpg";
 import Card from "./Card";
 import Chat from "./Chat";
 
 function MainNavbar() {
   const [isChat, setIsChat] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = (event) => {
+    event.preventDefault(); 
+    localStorage.clear(); 
+    navigate('/login'); 
+  };
 
   return (
     <div>
       <div className="flex justify-between align-center px-5" height={50}>
-        <Link to="/login">
+        <Link to="/login" onClick={handleSignOut}>
           <div className="flex align-center">
             <svg
               className="mt-5 ml-2"
