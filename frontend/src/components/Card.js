@@ -136,7 +136,7 @@ function Card() {
                   >
                     <div
                       style={{
-                        backgroundImage: "url(" + user.image + ")",
+                        backgroundImage: "url(" + "./img/" + user.image + ")",
                         backgroundRepeat: "no-repeat",
                       }}
                       className="card"
@@ -155,7 +155,7 @@ function Card() {
                   >
                     <div
                       style={{
-                        backgroundImage: "url(" + user.image + ")",
+                        backgroundImage: "url(" + "./img/" + user.image + ")",
                         backgroundRepeat: "no-repeat",
                       }}
                       className="card"
