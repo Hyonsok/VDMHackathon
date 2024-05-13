@@ -30,7 +30,7 @@ function Login() {
         // Handle successful login
         console.log("Login successful");
         localStorage.setItem("currentUser", JSON.stringify(data));
-        navigate('/card')
+        navigate('/main')
 
       } else {
         // Handle login failure

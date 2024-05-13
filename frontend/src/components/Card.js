@@ -63,29 +63,35 @@ function Card() {
   };
   // set last direction and decrease current index
   const swiped = async (user_id, likes, index, direction) => {
-    await swipe(direction); // Swipe the card!
+    // await swipe(direction); // Swipe the card!
     if (direction === "right") {
       try {
+        
+      if (Array.isArray(likes) && likes.length > 0) {
         if (likes.some(like => like.user_id === currentUser.user_id)) {
           // If user_id is in likes array, add user_id to matches array
-          await fetch(`http://localhost:4000/matches/${currentUser.user_id}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ user_id }),
-          });
-      } else {
-        // If user_id is not in likes array, add user_id to likes array
-        await fetch(`http://localhost:4000/likes/${currentUser.user_id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id }),
-        });
-      }
-      updateCurrentIndex(index - 1);
+              await fetch(`http://localhost:4000/matches/${currentUser.user_id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ user_id }),
+              });
+          } else {
+            // If user_id is not in likes array, add user_id to likes array
+            await fetch(`http://localhost:4000/likes/${currentUser.user_id}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ user_id }),
+            });
+          }
+        } else {
+          // Handle the case when likes is not an array or is empty
+          console.log("Likes is not an array or is empty");
+        }
+        updateCurrentIndex(index - 1);
       } catch(error) {
         console.log("Error:", error);
       }
@@ -170,7 +176,6 @@ function Card() {
             <button
               style={{ backgroundColor: !canSwipe && "#c3c4d3" }}
               onClick={() => {
-                console.log(users[currentIndex].user_id);
                 swiped(users[currentIndex].user_id, users[currentIndex].likes, currentIndex, "left")}
               }
             >
@@ -182,8 +187,6 @@ function Card() {
             <button
               style={{ backgroundColor: !canSwipe && "#c3c4d3" }}
               onClick={() => {
-                console.log(users[currentIndex].likes);
-
                 swiped(users[currentIndex].user_id, users[currentIndex].likes, currentIndex, "right")}
               }
             >

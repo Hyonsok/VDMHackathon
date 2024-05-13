@@ -64,21 +64,29 @@
 }
 
 .swipe {
-  position: absolute;
+  position: absolute; /* Position the cards absolutely within the container */
+  cursor: pointer;
+  overflow: hidden;
+  width: 100%; /* Ensure the cards take the full width of the container */
+  height: 100%; /* Ensure the cards take the full height of the container */
+}
+
+/* Adjust the z-index to stack the cards */
+.swipe:nth-child(n+5) {
+  z-index: -1; /* Start stacking from the second card with a lower z-index */
 }
 
 .cardContainer {
+  position: relative; /* Make the container a positioning context for absolute positioning */
   width: 90vw;
   max-width: 260px;
   height: 300px;
 }
-
 .card {
-  position: relative;
+  position: relative; /* Ensure the card content remains relative to its parent */
   background-color: transparent;
-  width: 80vw;
-  max-width: 260px;
-  height: 300px;
+  width: 100%; /* Ensure the card takes the full width of the container */
+  height: 100%; /* Ensure the card takes the full height of the container */
   box-shadow: 0px 0px 10px 0px rgba(204, 168, 244, 0.1);
   border-radius: 20px;
   background-size: cover;
